@@ -1,0 +1,165 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   FLIGHT TOOLKIT — 3D lid rig built from the provided renders
+   base plane (fixed) + hinged lid plane (real rotateX) + closed hero cover
+   Phases: closed → opening → open → closing → closed
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tk{ grid-column:1/-1; }
+
+.tk__stage{
+  position:relative;
+  width:min(1060px,96vw);
+  max-width:100%;          /* never stretch the grid track (mobile h-scroll) */
+  aspect-ratio:1060/640;
+  margin:clamp(8px,2vw,22px) auto 0;
+}
+
+.tk__case{
+  position:absolute; left:50%; top:50%;
+  width:min(640px,60vw);
+  aspect-ratio:3/2;
+  transform:translate(-50%,-50%);
+  perspective:1100px;      /* depth for the lid swing */
+}
+/* cursor-driven micro-tilt while open (case only — chips stay independent) */
+.tk[data-phase="open"] .tk__case{
+  transform:perspective(1400px) translate(-50%,-50%)
+            rotateX(calc(var(--my,0) * -1.1deg)) rotateY(calc(var(--mx,0) * 1.5deg));
+}
+.tk:not([data-phase="open"]) .tk__case{ transition:transform .7s cubic-bezier(.3,.7,.3,1); }
+.tk:not([data-phase="closed"]) .tk__case{ cursor:pointer; }
+
+/* keyboard focus: coral ring only (accent rule), never on mouse click */
+.tk__case:focus{ outline:none; }
+.tk__case:focus-visible{ outline:2px solid var(--coral,#FF765C); outline-offset:10px; border-radius:18px; }
+
+/* ── case renders (alpha cut-outs) ── */
+.tk__img{
+  position:absolute; left:0; top:0; width:100%;
+  pointer-events:none;         /* the case div itself takes the clicks */
+}
+
+/* base = lower 55% of the open render, always anchored to the case box */
+.tk__img--base{
+  height:100%;
+  clip-path:inset(45% 0 0 0);  /* lower 55% of the open render, anchored in place */
+}
+
+/* lid plane: hinges at the base joint, rotates up from behind */
+.tk__lid{
+  position:absolute; left:0; top:0;
+  width:100%; height:45%;
+  transform-origin:50% 100%;          /* rear hinge line */
+  transform-style:preserve-3d;
+  transform:rotateX(-143deg) scaleX(.78);   /* closed: seated over every side of the base */
+}
+[data-theme="night"] .tk__lid{
+  transform:rotateX(-145deg) scaleX(.754);  /* night case art is ~3% narrower: seat to its silhouette */
+  transition:transform .85s cubic-bezier(.55,.06,.28,1);
+}
+.tk[data-phase="opening"] .tk__lid,
+.tk[data-phase="open"]    .tk__lid{
+  transform:rotateX(0deg);
+  transition:transform 1s cubic-bezier(.3,1.22,.36,1);   /* slight spring at the top */
+}
+.tk[data-phase="closing"] .tk__lid{ transform:rotateX(0deg); transition:none; }
+
+.tk__img--lid{
+  height:222.222%;             /* lid plane is 45% tall → img spans the full case */
+  clip-path:inset(0 0 55% 0);  /* keep only the lid interior artwork */
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+.tk__img--lidback{
+  position:absolute; inset:0; width:100%; height:100%;
+  transform:rotateX(180deg);   /* exterior face of the same lid plane */
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+
+/* theme swap */
+[data-theme="day"]   .tk__img--night{ display:none; }
+[data-theme="night"] .tk__img--day{ display:none; }
+
+/* ── orbit tool chips (independent of the case image) ── */
+.tk__tools{ position:absolute; inset:0; pointer-events:none; }
+
+.tk__tool{
+  position:absolute; left:0; top:0;
+  display:grid; place-items:center;
+  padding:6px;
+  border-radius:20px;
+  background:rgba(255,255,255,.74);
+  border:1px solid rgba(16,28,44,.09);
+  box-shadow:0 10px 26px rgba(9,20,36,.16), 0 2px 6px rgba(9,20,36,.10);
+  -webkit-backdrop-filter:blur(10px);
+          backdrop-filter:blur(10px);
+  transition:transform .8s cubic-bezier(.22,.82,.24,1), opacity .45s ease, box-shadow .3s ease;
+  will-change:transform,opacity;
+  pointer-events:auto;
+}
+[data-theme="night"] .tk__tool{
+  background:rgba(13,24,44,.66);
+  border-color:rgba(255,255,255,.10);
+  box-shadow:0 12px 28px rgba(0,0,0,.42), 0 2px 6px rgba(0,0,0,.35);
+}
+.tk__tile{
+  width:100%; height:100%;
+  border-radius:26%;
+  display:grid; place-items:center;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16), inset 0 0 0 1px rgba(0,0,0,.05);
+  transform:translate3d(calc(var(--mx,0) * var(--f,1) * 9px), calc(var(--my,0) * var(--f,1) * 7px), 0)
+             rotateX(calc(var(--my,0) * var(--f,1) * -4deg)) rotateY(calc(var(--mx,0) * var(--f,1) * 5deg));
+  transition:transform .35s cubic-bezier(.2,.8,.3,1);
+}
+.tk__tile svg{ width:64%; height:64%; display:block; }
+
+@media (hover:hover){
+  .tk[data-phase="open"] .tk__tool:hover{
+    box-shadow:0 16px 34px rgba(9,20,36,.22), 0 3px 8px rgba(9,20,36,.12);
+  }
+  .tk[data-phase="open"] .tk__tool:hover .tk__tile{ transform:translateY(-2px) scale(1.07); }
+}
+
+/* ── ground shadow + hint ── */
+.tk__shadow{
+  position:absolute; left:50%; bottom:7%;
+  width:calc(min(640px,60vw) * .92); height:9%;
+  transform:translateX(calc(-50% + var(--mx,0) * 12px));
+  background:radial-gradient(50% 50% at 50% 50%, rgba(6,14,24,.40), rgba(6,14,24,.22) 46%, rgba(6,14,24,0) 76%);
+  transition:opacity .6s ease;
+}
+[data-theme="night"] .tk__shadow{ background:radial-gradient(50% 50% at 50% 50%, rgba(0,0,0,.52), rgba(0,0,0,.28) 46%, rgba(0,0,0,0) 76%); }
+.tk[data-phase="closed"] .tk__shadow{ opacity:.85; }
+
+.tk__hint{
+  position:absolute; left:0; right:0; bottom:1.2%;
+  margin:0; text-align:center;
+  font-size:10px; font-weight:600; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--muted-on-sky);
+  transition:opacity .5s ease .5s;
+}
+[data-theme="day"] .tk__hint{ color:rgba(16,28,44,.78); }   /* 10px caps need >=4.5:1 on the sky */
+.tk:not([data-phase="closed"]) .tk__hint{ opacity:0; }
+
+.no-anim, .no-anim *{ transition:none !important; }
+
+/* ── responsive ── */
+@media (max-width:900px){
+  .tk__case{ width:66vw; }
+  .tk__shadow{ width:calc(66vw * .92); }
+  .tk__tool{ padding:4px; border-radius:14px; }
+  .tk__tile{ height:100%; border-radius:24%; }
+}
+@media (max-width:640px){
+  .tk__case{ width:70vw; }
+  .tk__shadow{ width:calc(70vw * .92); }
+  .tk__stage{ aspect-ratio:1060/720; }
+  .tk__tool{ border-radius:12px; }
+  .tk__tile{ border-radius:22%; }
+}
+
+/* ── reduced motion ── */
+@media (prefers-reduced-motion:reduce){
+  .tk__img,.tk__tool,.tk__tile,.tk__hint,.tk__case,.tk__lid{ transition-duration:.01s; transition-delay:0s; }
+}

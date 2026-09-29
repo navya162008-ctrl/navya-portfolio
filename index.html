@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio — A Journey</title>
+<meta name="description" content="A scroll-driven UI/UX design portfolio. Take off, explore, discover, descend, land, connect.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Navya Gupta — UI/UX Design Student">
+<meta property="og:description" content="A scroll-driven UI/UX design portfolio. Take off, explore, discover, descend, land, connect.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/toolkit.css?v=1790106800">
+  <link rel="stylesheet" href="assets/css/main.css?v=1790106800">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101C2C'/%3E%3Cpath d='M6 17.5l20-5.5-4.6 5.5 4.6 5.5-20-5.5z' fill='%23FF765C'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<a class="skip" href="#work">Skip to work</a>
+
+<!-- ══════════════════════════════ ENVIRONMENT (fixed, behind content) ══════════════════════════════ -->
+<div class="stage" id="stage" aria-hidden="true">
+
+  <div class="sky" id="sky"></div>
+  <canvas class="stars" id="starsCanvas"></canvas>
+
+  <div class="celestial" id="celestial">
+    <span class="sun"></span>
+    <span class="moon"></span>
+  </div>
+
+  <!-- photographic atmosphere plates (injected by journey.js to keep first paint fast) -->
+  <div class="plates" id="plates">
+    <div class="plate plate--clouds plate--clouds-day" data-plate="clouds-day"><img alt="" data-src="assets/img/plate-clouds-day.jpg" data-src-sm="assets/img/plate-clouds-day-sm.jpg"></div>
+    <div class="plate plate--clouds plate--clouds-night" data-plate="clouds-night"><img alt="" data-src="assets/img/plate-clouds-night.jpg" data-src-sm="assets/img/plate-clouds-night-sm.jpg"></div>
+  </div>
+
+  <canvas class="clouds" id="cloudCanvas"></canvas>
+
+  <!-- ground / runway approach (revealed during LAND) -->
+  <div class="ground" id="ground">
+    <div class="plate plate--land plate--land-day" data-plate="land-day"><img alt="" data-src="assets/img/plate-land-day.jpg" data-src-sm="assets/img/plate-land-day-sm.jpg"></div>
+    <div class="plate plate--land plate--land-night" data-plate="land-night"><img alt="" data-src="assets/img/plate-land-night.jpg" data-src-sm="assets/img/plate-land-night-sm.jpg"></div>
+    <div class="ground__haze"></div>
+    <div class="ground__shade"></div>
+  </div>
+
+  <!-- airplane exterior (revealed during DESCEND) -->
+  <div class="plane" id="plane">
+    <svg viewBox="0 0 620 210" class="plane__svg">
+      <defs>
+        <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#FDFDFC"/>
+          <stop offset=".38" stop-color="#EFEFF0"/>
+          <stop offset=".58" stop-color="#C9D2D9"/>
+          <stop offset=".82" stop-color="#8B9BA7"/>
+          <stop offset="1" stop-color="#66757F"/>
+        </linearGradient>
+        <linearGradient id="wingGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#DDE3E8"/>
+          <stop offset=".55" stop-color="#A7B4BE"/>
+          <stop offset="1" stop-color="#788994"/>
+        </linearGradient>
+        <linearGradient id="tailGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#E9EBEC"/>
+          <stop offset="1" stop-color="#B9C3CB"/>
+        </linearGradient>
+      </defs>
+      <g class="plane__body">
+        <!-- tail -->
+        <path d="M474 96 L524 24 L570 28 L562 98 Z" fill="url(#tailGrad)"/>
+        <path d="M474 96 L524 24 L536 25 L500 96 Z" fill="#E4E6E8"/>
+        <path d="M497 92 L544 27 L556 28 L512 92 Z" fill="#FF765C" opacity=".92"/>
+        <path d="M542 108 L616 97 L620 116 L549 122 Z" fill="url(#wingGrad)"/>
+        <!-- fuselage -->
+        <path d="M14 112 C 62 88 192 76 338 80 L472 88 C 524 91 568 100 598 110 L598 119 C 554 129 504 135 472 138 L338 146 C 192 150 62 137 14 112 Z" fill="url(#bodyGrad)"/>
+        <path d="M36 124 C 118 142 300 150 472 138 L338 146 C 192 150 118 143 36 124 Z" fill="#6C7C88" opacity=".32"/>
+        <path d="M40 96 C 120 84 300 78 460 84 C 300 88 120 94 40 100 Z" fill="#FFFFFF" opacity=".5"/>
+        <!-- windows -->
+        <g class="plane__windows" fill="#42566A" opacity=".85">
+          <rect x="92" y="99" width="8" height="7" rx="3"/><rect x="118" y="97" width="8" height="7" rx="3"/>
+          <rect x="144" y="96" width="8" height="7" rx="3"/><rect x="170" y="95" width="8" height="7" rx="3"/>
+          <rect x="196" y="94" width="8" height="7" rx="3"/><rect x="222" y="94" width="8" height="7" rx="3"/>
+          <rect x="248" y="93" width="8" height="7" rx="3"/><rect x="274" y="92" width="8" height="7" rx="3"/>
+          <rect x="300" y="91" width="8" height="7" rx="3"/><rect x="326" y="90" width="8" height="7" rx="3"/>
+          <rect x="352" y="89" width="8" height="7" rx="3"/><rect x="378" y="88" width="8" height="7" rx="3"/>
+          <rect x="404" y="88" width="8" height="7" rx="3"/><rect x="430" y="88" width="8" height="7" rx="3"/>
+        </g>
+        <!-- wing + engine -->
+        <path d="M258 130 L332 200 L394 196 L372 134 Z" fill="url(#wingGrad)"/>
+        <path d="M298 142 L338 194 L360 192 L332 142 Z" fill="#7A8C98" opacity=".45"/>
+        <rect x="248" y="152" width="92" height="27" rx="13.5" fill="#B4C2CB"/>
+        <rect x="248" y="152" width="92" height="27" rx="13.5" fill="none" stroke="#7E909C" stroke-width="1.4"/>
+        <ellipse cx="259" cy="165.5" rx="6" ry="8" fill="#4E6478"/>
+        <path d="M14 112 C 20 108 28 105 36 104 L36 118 C 28 117 20 116 14 112 Z" fill="#8C9CA8"/>
+      </g>
+      <g class="plane__lights">
+        <circle class="blink-a" cx="18" cy="111" r="7"/>
+        <circle class="blink-b" cx="612" cy="106" r="6"/>
+        <circle class="steady" cx="332" cy="200" r="5"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- airplane cabin (TAKE OFF) : the supplied photograph, shown exactly as it is.
+       No mask, no inner layer, no glow — the photo's own window shows its own
+       sky and clouds, matching the reference image. -->
+  <div class="cabin" id="cabin">
+    <svg class="cabin__svg" id="cabinSvg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <image class="cabin__photo cabin__photo--day" x="0" y="0" width="1600" height="900"
+             preserveAspectRatio="xMidYMid slice" href="assets/img/plate-cabin-day.jpg"/>
+      <image class="cabin__photo cabin__photo--night" x="0" y="0" width="1600" height="900"
+             preserveAspectRatio="xMidYMid slice" href="assets/img/plate-cabin-night.jpg"/>
+    </svg>
+  </div>
+
+  <div class="scrim" id="scrim"></div>
+  <div class="vignette"></div>
+  <div class="grain" id="grain"></div>
+</div>
+
+<!-- ══════════════════════════════ NAVIGATION ══════════════════════════════ -->
+<header class="nav" id="nav">
+  <a class="nav__mark" href="#top" data-cursor="link" aria-label="Back to start">
+    <span class="nav__mono" data-bind="monogram">YN</span>
+    <span class="nav__marktext">
+      <span class="nav__name" data-bind="name">Your Name</span>
+      <span class="nav__sub" data-bind="role">UI/UX Design Student</span>
+    </span>
+  </a>
+
+  <nav class="nav__links" aria-label="Primary">
+    <a href="#about" data-cursor="link" data-goto="about">About</a>
+    <a href="#work" data-cursor="link" data-goto="work">Work</a>
+    <a href="#resume" data-cursor="link" data-goto="resume">Resume</a>
+    <a href="#contact" data-cursor="link" data-goto="contact">Contact</a>
+  </nav>
+
+  <button class="theme" id="themeToggle" data-cursor="link" aria-label="Switch to night mode">
+    <span class="theme__track">
+      <span class="theme__thumb"></span>
+      <svg class="theme__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.4"/><g stroke-linecap="round"><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></g></svg>
+      <svg class="theme__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.4A8.6 8.6 0 0 1 9.6 4 8.6 8.6 0 1 0 20 14.4Z"/></svg>
+    </span>
+    <span class="theme__label" id="themeLabel">Day</span>
+  </button>
+</header>
+
+<!-- journey progress rail -->
+<nav class="rail" id="rail" aria-label="Journey progress">
+  <div class="rail__line"><span class="rail__fill" id="railFill"></span></div>
+  <span class="rail__plane" id="railPlane" aria-hidden="true">
+    <svg viewBox="0 0 24 24"><path d="M2 13.2 22 6l-5.2 7.2L22 20.4 2 13.2Z"/></svg>
+  </span>
+  <ul class="rail__list" id="railList"></ul>
+</nav>
+
+<!-- ══════════════════════════════ JOURNEY CONTENT ══════════════════════════════ -->
+<main id="top">
+  <div id="journey">
+
+    <!-- 01 · TAKE OFF — inside the cabin -->
+    <section class="scene scene--cabin" data-scene="takeoff" style="--h:150vh" id="takeoff">
+      <div class="scene__inner">
+        <div class="cabin-intro" id="cabinIntro">
+          <p class="eyebrow"><span class="dot"></span> Ready for Takeoff <svg class="miniplane" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg></p>
+          <h1 class="cabin-intro__name" data-bind="nameBig">Your Name</h1>
+          <p class="cabin-intro__role" data-bind="roleBig">UI/UX Design Student</p>
+          <p class="cabin-intro__line" data-bind="introLine"></p>
+          <div class="cabin-intro__meta">
+            <span data-bind="locationLine"></span>
+          </div>
+        </div>
+        <p class="scroll-hint" id="scrollHint"><span class="scroll-hint__bar"></span> Scroll to Take Off <span class="scroll-hint__arrow">&darr;</span></p>
+      </div>
+    </section>
+
+    <!-- 02 · EXPLORE — first look outward -->
+    <section class="scene scene--open" data-scene="explore" style="--h:130vh" id="explore">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="open-note panel panel--slim panel--bare" data-reveal>
+            <p class="eyebrow"><span class="dot"></span> Explore</p>
+            <p class="lead" data-bind="exploreLine"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 · ABOUT -->
+    <section class="scene" data-scene="about" style="--h:200vh" id="about">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="panel panel--about panel--bare panel--glass" data-reveal>
+            <p class="eyebrow"><span class="dot"></span> About</p>
+            <h2 class="h2" data-bind="aboutHeading">About me</h2>
+            <div class="about__grid">
+              <div class="about__text" data-bind="aboutBody"></div>
+              <aside class="about__side">
+                <div class="about__block">
+                  <h3 class="label">Education</h3>
+                  <ul class="mini" data-bind="educationList"></ul>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · SKILLS & TOOLS -->
+    <section class="scene" data-scene="skills" style="--h:190vh" id="skills">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="skills" data-reveal>
+            <div class="skills__head">
+  <p class="eyebrow"><span class="dot"></span> Toolkit</p>
+              <h2 class="h2">Flight Toolkit</h2>
+              <p class="muted" data-bind="skillsNote"></p>
+            </div>
+            <div class="skills__grid" data-bind="skillsGrid"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · WORK -->
+    <section class="scene" data-scene="work" style="--h:220vh" id="work">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="work__head" data-reveal>
+            <p class="eyebrow"><span class="dot"></span> Work</p>
+            <h2 class="h2">Selected work</h2>
+            <p class="muted" data-bind="workNote"></p>
+          </div>
+          <div class="work__rail" id="workRail" data-bind="workRail"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 · DESIGN PROCESS -->
+    <section class="scene" data-scene="process" style="--h:190vh" id="process">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="panel panel--bare panel--glass" data-reveal>
+            <p class="eyebrow"><span class="dot"></span> Process</p>
+            <h2 class="h2">How I work</h2>
+            <p class="muted process__note" data-bind="processNote"></p>
+            <ol class="process" data-bind="processList"></ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 · DESCEND — the environment breathes -->
+    <section class="scene scene--quiet" data-scene="descend" style="--h:130vh" id="descend">
+      <div class="scene__inner">
+        <div class="wrap">
+          <p class="quiet-note" data-reveal data-bind="descendNote"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 · LAND — resume -->
+    <section class="scene" data-scene="land" style="--h:180vh" id="resume">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="pass-stage" data-reveal data-bind="resumeBox"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 · CONNECT — contact -->
+    <section class="scene scene--connect" data-scene="connect" style="--h:200vh" id="contact">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="connect" data-reveal>
+            <div class="connect__col">
+              <p class="eyebrow"><span class="dot"></span> Contact</p>
+              <h2 class="display" data-bind="contactHeading"></h2>
+              <p class="lead" data-bind="contactLine"></p>
+              <ul class="links" data-bind="contactLinks"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · FINAL -->
+    <section class="scene scene--final" data-scene="final" style="--h:150vh" id="final">
+      <div class="scene__inner">
+        <div class="wrap">
+          <div class="final" data-reveal>
+            <p class="final__word" data-bind="finalWord"></p>
+            <p class="final__line" data-bind="finalLine"></p>
+            <footer class="foot">
+              <span data-bind="footName"></span>
+              <span class="foot__sep"></span>
+              <span data-bind="footMeta"></span>
+              <span class="foot__sep"></span>
+              <button class="foot__top" data-cursor="link" id="backToTop">Back to Take Off <span class="foot__up">&uarr;</span></button>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- custom cursor -->
+<div class="cursor" id="cursor" aria-hidden="true">
+  <span class="cursor__ring"></span>
+  <svg class="cursor__plane" viewBox="0 0 32 32" aria-hidden="true">
+    <!-- top-down airliner silhouette, nose pointing along +X so it can bank with the cursor -->
+    <path d="M31 16 L25.6 14.6 L21.6 14.2 L18.2 9.8 L12 8.9 L10.6 10.3 L16.4 14.9
+             L8.4 15.4 L6 12 L4.2 12.5 L4.2 19.5 L6 20 L8.4 16.6 L16.4 17.1
+             L10.6 21.7 L12 23.1 L18.2 22.2 L21.6 17.8 L25.6 17.4 Z"/>
+  </svg>
+</div>
+
+<noscript>
+  <div class="noscript">This portfolio uses scroll-driven animation. Please enable JavaScript to view the journey.</div>
+</noscript>
+
+<script src="assets/js/logos.js?v=1790106800"></script>
+  <script src="assets/js/content.js?v=1790106800"></script>
+<script src="assets/js/theme.js?v=1790106800"></script>
+<script src="assets/js/cursor.js?v=1790106800"></script>
+<script src="assets/js/journey.js?v=1790106800"></script>
+<script src="assets/js/render.js?v=1790106800"></script>
+<script src="assets/js/toolkit.js?v=1790106800"></script>
+  <script src="assets/js/ornament.js?v=1790106800"></script>
+  <script src="assets/js/inspect.js?v=1790106800"></script>
+</body>
+</html>
